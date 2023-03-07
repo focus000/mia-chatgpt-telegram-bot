@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+from Chat import Chat
 from telegram import Update
 from telegram.ext import filters, MessageHandler, ApplicationBuilder, ContextTypes, CommandHandler
 
@@ -12,6 +13,7 @@ logging.basicConfig(
 class MiaBot:
     def __init__(self, config):
         self.config = config
+        self.chat = Chat(config['openai-api-key'])
 
     def get_telegram_bot(self):
         # get token
@@ -36,7 +38,8 @@ class MiaBot:
         await context.bot.send_message(chat_id=update.effective_chat.id, text="I'm a bot, please talk to me!")
 
     async def __chat(self, update: Update, context: ContextTypes.DEFAULT_TYPE):
-        await context.bot.send_message(chat_id=update.effective_chat.id, text=update.message.text)
+        response = self.chat.send(f"telegram-user-{update.effective_chat.id}", update.message.text)
+        await context.bot.send_message(chat_id=update.effective_chat.id, text=response)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='MiaBot')
