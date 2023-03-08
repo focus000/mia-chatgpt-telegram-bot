@@ -1,5 +1,9 @@
 import openai
+import backoff
 
+@backoff.on_exception(backoff.expo, openai.error.RateLimitError)
+def completions_with_backoff(**kwargs):
+    return openai.ChatCompletion.create(**kwargs)
 
 class Chat:
     def __init__(self, api_key):
@@ -25,7 +29,7 @@ class Chat:
         prompt.append(question)
         print(prompt)
 
-        response = openai.ChatCompletion.create(
+        response = completions_with_backoff(
             model="gpt-3.5-turbo",
             messages=prompt,
             user=user_id
