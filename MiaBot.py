@@ -29,7 +29,7 @@ class MiaBot:
         return bot
 
     def run(self):
-        print('Config: {}'.format(self.config))
+        print(f'Config: {self.config}')
         print('Running bot')
         bot = self.get_telegram_bot()
         bot.run_polling()
